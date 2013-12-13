@@ -71,7 +71,9 @@ object KafkaBuild extends Build {
           <exclude org="log4j" module="log4j"/>
           <exclude org="jline" module="jline"/>
         </dependency>
-      </dependencies>
+      </dependencies>,
+      mappings in packageBin in Compile += file("LICENSE") -> "LICENSE",
+      mappings in packageBin in Compile += file("NOTICE") -> "NOTICE"
   )
 
   val hadoopSettings = Seq(
@@ -113,6 +115,8 @@ object KafkaBuild extends Build {
       val jarFiles = deps.files.filter(f => !products.files.contains(f) && f.getName.endsWith(".jar"))
       val destination = target / "RELEASE" / releaseName
       IO.copyFile(packageBin, destination / packageBin.getName)
+      IO.copyFile(file("LICENSE"), destination / "LICENSE")
+      IO.copyFile(file("NOTICE"), destination / "NOTICE")      
       IO.copy(jarFiles.map { f => (f, destination / "libs" / f.getName) })
       IO.copyDirectory(file("config"), destination / "config")
       IO.copyDirectory(file("bin"), destination / "bin")
